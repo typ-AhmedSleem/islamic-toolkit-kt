@@ -9,7 +9,6 @@ gen/
 # User-specific files
 *.iws
 *.ipr
-*.iws
 *.ids
 *.bak
 
@@ -40,9 +39,6 @@ gradle-app.settings
 # CMake
 cmake-build-*/
 
-# Native Builds
-out/
-
 # macOS specific
 .DS_Store
 .idea/workspace.xml
@@ -66,8 +62,6 @@ out/
 *.swp
 *~
 *.old
-*.bak
 *.mdb
 Thumbs.db
 ._*
-
