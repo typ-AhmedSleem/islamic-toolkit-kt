@@ -18,9 +18,19 @@ object LocaleManager {
      *
      * @return The default `Locale` used in the system.
      *
-     * @see Locale.getDefault
+     * @see Locale.getDefault for more details on how it works
      */
     fun getDefault(): Locale = Locale.getDefault()
+
+    /**
+     * This function creates a new custom locale with given language code.
+     *
+     * @param language Construct a locale from a language code.
+     * This constructor of Locale(code) normalizes the language value to lowercase.
+     *
+     * @return a new Locale with the given language code.
+     */
+    fun custom(language: String) = Locale(language)
 
     /**
      * Locales
@@ -29,8 +39,10 @@ object LocaleManager {
      * such as: Arabic
      */
     object Locales {
-        // Predefined supported locales
-        val ARABIC = Locale("ar")
+        /**
+         * Locale object for Arabic
+         */
+        val ARABIC = custom("ar")
     }
 
 }

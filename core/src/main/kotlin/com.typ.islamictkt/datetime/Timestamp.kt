@@ -6,7 +6,7 @@
 package com.typ.islamictkt.datetime
 
 import com.typ.islamictkt.annotations.IntRange
-import com.typ.islamictkt.datetime.FormatPattern.DATETIME_FULL
+import com.typ.islamictkt.datetime.PatternFormatter.DateTimeFull
 import java.util.*
 
 /**
@@ -114,7 +114,7 @@ class Timestamp internal constructor() {
 
     fun isBefore(timestamp: Long) = toMillis() < timestamp
 
-    fun getFormatted(pattern: FormatPattern) = pattern.format(this)
+    fun getFormatted(pattern: PatternFormatter) = pattern.format(this)
 
     fun roll(field: Int, amount: Int) = cal.add(field, amount)
 
@@ -124,22 +124,22 @@ class Timestamp internal constructor() {
 
     val isLastMonth: Boolean
         get() {
-            val lastMonthTimestamp = NOW().apply { roll(Calendar.MONTH, -1) }
+            val lastMonthTimestamp = now().apply { roll(Calendar.MONTH, -1) }
             return hasSameYearOf(lastMonthTimestamp) && hasSameMonthOf(lastMonthTimestamp)
         }
     val isInThisMonth: Boolean
-        get() = hasSameYearOf(NOW()) && hasSameMonthOf(NOW())
+        get() = hasSameYearOf(now()) && hasSameMonthOf(now())
     val isNextMonth: Boolean
         get() {
-            val nextMonthTimestamp = NOW().apply { roll(Calendar.MONTH, 1) }
+            val nextMonthTimestamp = now().apply { roll(Calendar.MONTH, 1) }
             return hasSameYearOf(nextMonthTimestamp) && hasSameMonthOf(nextMonthTimestamp)
         }
     val isYesterday: Boolean
-        get() = dateMatches(YESTERDAY())
+        get() = dateMatches(yesterday())
     val isToday: Boolean
-        get() = dateMatches(NOW())
+        get() = dateMatches(now())
     val isTomorrow: Boolean
-        get() = dateMatches(TOMORROW())
+        get() = dateMatches(tomorrow())
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
@@ -156,11 +156,11 @@ class Timestamp internal constructor() {
 
     override fun hashCode() = Objects.hash(minute, hour, day, month, year)
 
-    override fun toString() = "Timestamp{ " + getFormatted(DATETIME_FULL()) + " }"
+    override fun toString() = "Timestamp{ " + getFormatted(DateTimeFull()) + " }"
 
     companion object {
-        fun YESTERDAY() = NOW().apply { roll(Calendar.DATE, -1) }
-        fun NOW() = Timestamp()
-        fun TOMORROW() = NOW().apply { roll(Calendar.DATE, 1) }
+        fun yesterday() = now().apply { roll(Calendar.DATE, -1) }
+        fun now() = Timestamp()
+        fun tomorrow() = now().apply { roll(Calendar.DATE, 1) }
     }
 }
