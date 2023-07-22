@@ -6,14 +6,14 @@
 
 ## Module structure
 
-* [**core.locale**](https://github.com/typ-AhmedSleem/islamic-toolkit-kt/core/src/main/kotlin/com.typ.islamictkt/locale): Provides locale-related utils.
+* [**core.locale**](https://github.com/typ-AhmedSleem/islamic-toolkit-kt/blob/develop/core/src/main/kotlin/com.typ.islamictkt/locale): Provides locale-related utils.
 
-* [**core.location**](https://github.com/typ-AhmedSleem/islamic-toolkit-kt/core/src/main/kotlin/com.typ.islamictkt/location): Provides
+* [**core.location**](https://github.com/typ-AhmedSleem/islamic-toolkit-kt/core/blob/develop/src/main/kotlin/com.typ.islamictkt/location): Provides
     * `Location` class to hold location information.
     * `PopularLocations` object where you can find most popular cities
       as location models ready to be used.
 
-* [**core.datetime**](https://github.com/typ-AhmedSleem/islamic-toolkit-kt/core/src/main/kotlin/com.typ.islamictkt/datetime): Provides
+* [**core.datetime**](https://github.com/typ-AhmedSleem/islamic-toolkit-kt/blob/develop/core/src/main/kotlin/com.typ.islamictkt/datetime): Provides
     * Inheritable classes to easily handle datetime processing and representations.
     * Multiple high-level datetime format patterns as classes.
 
