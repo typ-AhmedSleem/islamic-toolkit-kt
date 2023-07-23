@@ -8,9 +8,11 @@ import com.typ.islamictkt.locale.LocaleManager
 import java.util.*
 
 /**
- * Model class of Pray which holds all Pray Item data
+ * Model class of Pray which holds all Pray Item data.
+ *
+ * NOTE: This class can be extended to add more fields as you need.
  */
-class Pray(
+open class Pray(
     /**
      * Used only to indicate what this pray is by enum ordinal
      */
@@ -53,5 +55,23 @@ class Pray(
     }
 
     override fun hashCode() = type.hashCode() + (time.toMillis() * 0.001).toInt()
+    override fun toString(): String {
+        return buildString {
+            append("Pray(type=")
+            append(type)
+            append(", time=")
+            append(formattedTime)
+            append(", status=")
+            append(status)
+            append(", passed=")
+            append(passed)
+            append(", upcoming=")
+            append(upcoming)
+            append(", datetime='")
+            append(time.getFormatted(PatternFormatter.DateTimeFull()))
+            append("')")
+        }
+    }
+
 
 }

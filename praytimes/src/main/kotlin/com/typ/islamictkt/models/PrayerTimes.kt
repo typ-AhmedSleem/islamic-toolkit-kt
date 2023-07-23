@@ -1,31 +1,25 @@
 package com.typ.islamictkt.models
 
-class PrayerTimes(
-    vararg prays: Pray
-) {
+import com.typ.islamictkt.datetime.Timestamp
+import com.typ.islamictkt.enums.PrayType
+import com.typ.islamictkt.lib.PrayerTimesCalculator
+import com.typ.islamictkt.location.Location
+import com.typ.islamictkt.utils.byHMS
 
-    val fajr: Pray
-    val sunrise: Pray
-    val dhuhr: Pray
-    val asr: Pray
-    val maghrib: Pray
+open class PrayerTimes constructor(
+    val fajr: Pray,
+    val sunrise: Pray,
+    val dhuhr: Pray,
+    val asr: Pray,
+    val maghrib: Pray,
     val isha: Pray
-
-    init {
-        if (prays.isEmpty()) throw IllegalStateException("PrayerTimes received an empty list of prays from builder.")
-        if (prays.size != 6) throw IllegalStateException("PrayerTimes only accepts a list of 6 prays. found: ${prays.size}")
-
-        fajr = prays[0]
-        sunrise = prays[1]
-        dhuhr = prays[2]
-        asr = prays[3]
-        maghrib = prays[4]
-        isha = prays[5]
-    }
+) {
 
     operator fun get(index: Int) = toArray()[index]
 
     operator fun contains(pray: Pray) = pray in toArray()
+
+    operator fun iterator() = toArray().iterator()
 
     fun toArray() = arrayOf(fajr, sunrise, dhuhr, asr, maghrib, isha)
 
@@ -33,53 +27,54 @@ class PrayerTimes(
 
     override fun toString(): String {
         return """
-            PrayTimes{fajr=${fajr}
-            sunrise=${sunrise}
-            dhuhr=${dhuhr}
-            asr=${asr}
-            maghrib=${maghrib}
-            isha=${isha}}
+            PrayTimes{
+                fajr=${fajr}
+                sunrise=${sunrise}
+                dhuhr=${dhuhr}
+                asr=${asr}
+                maghrib=${maghrib}
+                isha=${isha}
+            }
             """.trimIndent()
     }
 
-    class Builder internal constructor() {
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other !is PrayerTimes) return false
 
-        private val prays = arrayOfNulls<Pray>(6)
+        if (fajr != other.fajr) return false
+        if (sunrise != other.sunrise) return false
+        if (dhuhr != other.dhuhr) return false
+        if (asr != other.asr) return false
+        if (maghrib != other.maghrib) return false
+        return isha == other.isha
+    }
 
-        fun add(pray: Pray) {
-            pray.also { prays[pray.type.ordinal] = it }
-        }
-
-        fun setFajr(fajr: Pray) {
-            prays[0] = fajr
-        }
-
-        fun setSunrise(sunrise: Pray) {
-            prays[1] = sunrise
-        }
-
-        fun setDhuhr(dhuhr: Pray) {
-            prays[2] = dhuhr
-        }
-
-        fun setAsr(asr: Pray) {
-            prays[3] = asr
-        }
-
-        fun setMaghrib(maghrib: Pray) {
-            prays[4] = maghrib
-        }
-
-        fun setIsha(isha: Pray) {
-            prays[5] = isha
-        }
-
-        fun build() = PrayerTimes(*prays.requireNoNulls())
-
+    override fun hashCode(): Int {
+        var result = fajr.hashCode()
+        result = 31 * result + sunrise.hashCode()
+        result = 31 * result + dhuhr.hashCode()
+        result = 31 * result + asr.hashCode()
+        result = 31 * result + maghrib.hashCode()
+        result = 31 * result + isha.hashCode()
+        return result
     }
 
     companion object {
         @JvmStatic
-        fun newBuilder() = Builder()
+        fun getTodayPrays(location: Location, config: PrayerTimesCalculator.Config): PrayerTimes {
+            val today = Timestamp.now()
+            val rawPrays = PrayerTimesCalculator.newInstance(location, config).getPrayTimes(0)
+
+            return PrayerTimes(
+                fajr = Pray(PrayType.FAJR, today.byHMS(rawPrays[0])),
+                sunrise = Pray(PrayType.SUNRISE, today.byHMS(rawPrays[1])),
+                dhuhr = Pray(PrayType.DHUHR, today.byHMS(rawPrays[2])),
+                asr = Pray(PrayType.ASR, today.byHMS(rawPrays[3])),
+                maghrib = Pray(PrayType.MAGHRIB, today.byHMS(rawPrays[4])),
+                isha = Pray(PrayType.ISHA, today.byHMS(rawPrays[5]))
+            )
+        }
+
     }
 }
