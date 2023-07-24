@@ -1,44 +1,41 @@
 package com.typ.islamictkt.lib
 
-/**
- * fa : fajr angle.
- * ms : maghrib selector (0 = angle; 1 = minutes after sunset).
- * mv : maghrib parameter (in angle or minutes)
- * is : isha selector (0 = angle; 1 = minutes after maghrib)
- * iv : isha parameter (in angle or minutes)
- */
 class CalculationMethodParameters(
-    fajrAngle: Double,
+    var fajrAngle: Double,
+    var shouldApplyMaghribMinutes: Boolean,
     maghribAngle: Double,
-    maghribMinutes: Int,
+    maghribMinutes: Double,
+    var shouldApplyIshaMinutes: Boolean,
     ishaAngle: Double,
-    ishaMinutes: Int
+    ishaMinutes: Double
 ) {
-
-    // todo: There's some extra work to be done in the setter of each field.
-
-    var fajrAngle: Double = fajrAngle
-        set(value) {
-            field = value
-        }
 
     var maghribAngle: Double = maghribAngle
         set(value) {
             field = value
+            shouldApplyMaghribMinutes = false
         }
 
-    var maghribMinutes: Int = maghribMinutes
+    var maghribMinutes: Double = maghribMinutes
         set(value) {
             field = value
+            shouldApplyMaghribMinutes = true
         }
+
     var ishaAngle: Double = ishaAngle
         set(value) {
             field = value
+            shouldApplyIshaMinutes = false
         }
 
-    var ishaMinutes: Int = ishaMinutes
+    var ishaMinutes: Double = ishaMinutes
         set(value) {
             field = value
+            shouldApplyIshaMinutes = true
         }
+
+    override fun toString(): String {
+        return "CalculationMethodParameters(applyMaghribMinutes=$shouldApplyMaghribMinutes, applyIshaMinutes=$shouldApplyIshaMinutes, fajrAngle=$fajrAngle, maghribAngle=$maghribAngle, maghribMinutes=$maghribMinutes, ishaAngle=$ishaAngle, ishaMinutes=$ishaMinutes)"
+    }
 
 }

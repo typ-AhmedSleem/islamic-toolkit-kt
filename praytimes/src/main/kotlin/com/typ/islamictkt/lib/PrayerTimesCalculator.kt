@@ -1,6 +1,7 @@
 package com.typ.islamictkt.lib
 
 import com.typ.islamictkt.datetime.HMS
+import com.typ.islamictkt.datetime.PatternFormatter
 import com.typ.islamictkt.datetime.Timestamp
 import com.typ.islamictkt.datetime.YMD
 import com.typ.islamictkt.enums.AsrMethod
@@ -19,6 +20,7 @@ import com.typ.islamictkt.utils.MathUtils.dArcCot
 import com.typ.islamictkt.utils.MathUtils.dCos
 import com.typ.islamictkt.utils.MathUtils.dSin
 import com.typ.islamictkt.utils.MathUtils.dTan
+import com.typ.islamictkt.utils.byHMS
 import java.util.*
 import kotlin.math.abs
 import kotlin.math.floor
@@ -26,40 +28,16 @@ import kotlin.math.floor
 /**
  * Class that do all complicated calculations to get PrayerTimes
  * NOTE: You don't have to use this class directly
- * instead, access it's higher-level impl: [PrayerTimes]
+ * instead, access it's higher-level impl found in [PrayerTimes].
+ *
+ * @sample PrayerTimes.getPrays
+ * @sample PrayerTimes.getNextPray
+ * @sample PrayerTimes.getTodayPrays
  */
-class PrayerTimesCalculator private constructor(
+class PrayerTimesCalculator(
     val location: Location,
     val config: Config
 ) {
-    /**
-     * methodParams = new doubleArray(fa, ms, mv, is, iv);
-     * 0 fa : fajr angle.
-     * 1 ms : maghrib selector (0 = angle; 1 = minutes after sunset).
-     * 2 mv : maghrib parameter value (in angle or minutes)
-     * 3 is : isha selector (0 = angle; 1 = minutes after maghrib)
-     * 4 iv : isha parameter value (in angle or minutes)
-     */
-    private val methodParams = HashMap<String, DoubleArray>()
-
-    init {
-        // Jafari
-        methodParams[CalculationMethod.JAFARI.name] = doubleArrayOf(16.0, 0.0, 4.0, 0.0, 14.0)
-        // Karachi
-        methodParams[CalculationMethod.KARACHI.name] = doubleArrayOf(18.0, 1.0, 0.0, 0.0, 18.0)
-        // ISNA
-        methodParams[CalculationMethod.ISNA.name] = doubleArrayOf(15.0, 1.0, 0.0, 0.0, 15.0)
-        // MWL
-        methodParams[CalculationMethod.MWL.name] = doubleArrayOf(18.0, 1.0, 0.0, 0.0, 17.0)
-        // Makkah
-        methodParams[CalculationMethod.MAKKAH.name] = doubleArrayOf(18.5, 1.0, 0.0, 1.0, 90.0)
-        // Egypt
-        methodParams[CalculationMethod.EGYPT.name] = doubleArrayOf(19.5, 1.0, 0.0, 0.0, 17.5)
-        // Tehran
-        methodParams[CalculationMethod.TEHRAN.name] = doubleArrayOf(17.7, 0.0, 4.5, 0.0, 14.0)
-        // Custom
-        methodParams[CalculationMethod.CUSTOM.name] = doubleArrayOf(18.0, 1.0, 0.0, 0.0, 17.0)
-    }
 
     /**
      * Compute time for the given angle
@@ -78,10 +56,10 @@ class PrayerTimesCalculator private constructor(
      * Shafii: ShadowLength = 1
      * Hanafi: ShadowLength = 2
      */
-    private fun computeAsr(jDate: Double, shadowLength: Double, daytimePortion: Double): Double {
-        val sunDec = calculateSunDeclination(jDate + daytimePortion)
+    private fun computeAsr(jDate: Double, shadowLength: Double, t: Double): Double {
+        val sunDec = calculateSunDeclination(jDate + t)
         val G = -dArcCot(shadowLength + dTan(abs(location.latitude - sunDec)))
-        return computeTime(jDate, G, daytimePortion)
+        return computeTime(jDate, G, t)
     }
 
     /** Compute the difference between two times */
@@ -91,58 +69,16 @@ class PrayerTimesCalculator private constructor(
 
     /** Set custom values for calculation parameters
      *
-     * NOTE: custom parameters take effect only if
+     * NOTE: Custom parameters take effect only if
      * [CalculationMethod.CUSTOM] is the method set in params.
      *
-     * Method Parameters = doubleArray of size 5
-     * ================ INDICES =================
-     * -|0|> Fajr angle.
-     * -|1|>
-     * -|2|> Maghrib minutes | Maghrib angle.
-     * -|3|>
-     * -|4|> Isha minutes | Isha angle.
+     * Fajr angle.
+     * Maghrib selector (0 => Angle | 1 => Minutes)
+     * Maghrib minutes | Maghrib angle.
+     * Isha selector (0 => Angle | 1 => Minutes)
+     * Isha minutes | Isha angle.
      *
      */
-    private fun setCustomParams(params: DoubleArray) {
-        for (i in 0..4) {
-            if (params[i] == -1.0) {
-                params[i] = methodParams[config.calcMethod.name]!![i]
-                methodParams[CalculationMethod.CUSTOM.name] = params
-            } else {
-                methodParams[CalculationMethod.CUSTOM.name]!![i] = params[i]
-            }
-        }
-    }
-
-    // Set the angle for calculating Fajr
-    fun setFajrAngle(angle: Double) {
-        val params = doubleArrayOf(angle, -1.0, -1.0, -1.0, -1.0)
-        setCustomParams(params)
-    }
-
-    // Set the angle for calculating Maghrib
-    fun setMaghribAngle(angle: Double) {
-        val params = doubleArrayOf(-1.0, 0.0, angle, -1.0, -1.0)
-        setCustomParams(params)
-    }
-
-    // Set the angle for calculating Isha
-    fun setIshaAngle(angle: Double) {
-        val params = doubleArrayOf(-1.0, -1.0, -1.0, 0.0, angle)
-        setCustomParams(params)
-    }
-
-    // Set the minutes after Sunset for calculating Maghrib
-    fun setMaghribMinutes(minutes: Double) {
-        val params = doubleArrayOf(-1.0, 1.0, minutes, -1.0, -1.0)
-        setCustomParams(params)
-    }
-
-    // Set the minutes after Maghrib for calculating Isha
-    fun setIshaMinutes(minutes: Double) {
-        val params = doubleArrayOf(-1.0, -1.0, -1.0, 1.0, minutes)
-        setCustomParams(params)
-    }
 
     private fun rawToTime(time: Double): HMS {
         var temp = time
@@ -158,18 +94,25 @@ class PrayerTimesCalculator private constructor(
      * Compute prayer times at given julian date.
      */
     private fun computePrayerTimes(jDate: Double): Array<HMS> {
-        // Default times
         val times = doubleArrayOf(5.0, 6.0, 12.0, 13.0, 18.0, 18.0, 18.0)
-        // =================== Calculate PrayerTimes =================== //
+        val params = config.params
+        // =============== Calculate PrayerTimes in each iteration ================ //
         for (i in 1..5) {
             val dayPortion = calculateDayPortion(times)
-            times[0] = computeTime(jDate, 180 - config.params.fajrAngle, dayPortion[0]) // Fajr.
+
+            times[0] = computeTime(jDate, 180 - params.fajrAngle, dayPortion[0]) // Fajr.
+
             times[1] = computeTime(jDate, 180 - 0.833, dayPortion[1]) // Sunrise.
+
             times[2] = calculateMidDay(jDate, dayPortion[2]) // Dhuhr.
+
             times[3] = computeAsr(jDate, config.asrMethod.shadowLength, dayPortion[3]) // Asr.
+
             times[4] = computeTime(jDate, 0.833, dayPortion[4]) // Sunset.
-            times[5] = computeTime(jDate, methodParams[config.calcMethod.name]!![2], dayPortion[5]) // Maghrib.
-            times[6] = computeTime(jDate, methodParams[config.calcMethod.name]!![4], dayPortion[6]) // Isha
+
+            times[5] = computeTime(jDate, params.maghribAngle, dayPortion[5]) // Maghrib.
+
+            times[6] = computeTime(jDate, params.ishaAngle, dayPortion[6]) // Isha
         }
 
         // ============================= Adjust times ============================= //
@@ -184,13 +127,13 @@ class PrayerTimesCalculator private constructor(
         times[2] += (config.dhuhrMinutes / 60f).toDouble()
 
         // Maghrib
-        if (methodParams[config.calcMethod.name]!![1] == 1.0) {
-            times[5] = times[4] + methodParams[config.calcMethod.name]!![2] / 60
+        if (params.shouldApplyMaghribMinutes) {
+            times[5] = times[4] + params.maghribMinutes / 60
         }
 
         // Isha
-        if (methodParams[config.calcMethod.name]!![3] == 1.0) {
-            times[6] = times[5] + methodParams[config.calcMethod.name]!![4] / 60
+        if (params.shouldApplyIshaMinutes) {
+            times[6] = times[5] + params.ishaMinutes / 60
         }
 
         if (config.higherLatMethod !== HigherLatitudeMethod.NONE) {
@@ -199,15 +142,14 @@ class PrayerTimesCalculator private constructor(
             val nightTime = timeDiff(times[4], times[1]) // Sunset to Sunrise
 
             // Adjust Fajr
-            val fajrDiff = calculateNightPortion(config.higherLatMethod, methodParams[config.calcMethod.name]!![0]) * nightTime
+            val fajrDiff = calculateNightPortion(config.higherLatMethod, params.fajrAngle) * nightTime
             if (times[0].isNaN() || timeDiff(times[0], times[1]) > fajrDiff) {
                 times[0] = times[1] - fajrDiff
             }
 
             // Adjust Isha
-            val ishaAngle: Double = if (methodParams[config.calcMethod.name]!![3] == 0.0) {
-                methodParams[config.calcMethod.name]!![4]
-            } else 18.0
+            val ishaAngle: Double = if (!params.ishaAngle.isNaN()) params.ishaAngle
+            else 18.0
 
             val ishaDiff = calculateNightPortion(config.higherLatMethod, ishaAngle) * nightTime
             if (times[6].isNaN() || timeDiff(times[4], times[6]) > ishaDiff) {
@@ -215,9 +157,8 @@ class PrayerTimesCalculator private constructor(
             }
 
             // Adjust Maghrib
-            val maghribAngle: Double = if (methodParams[config.calcMethod.name]!![1] == 0.0) {
-                methodParams[config.calcMethod.name]!![2]
-            } else 4.0
+            val maghribAngle: Double = if (!params.maghribAngle.isNaN()) params.maghribAngle
+            else 4.0
 
             val maghribDiff = calculateNightPortion(config.higherLatMethod, maghribAngle) * nightTime
             if (times[5].isNaN() || timeDiff(times[4], times[5]) > maghribDiff) {
@@ -225,13 +166,15 @@ class PrayerTimesCalculator private constructor(
             }
         }
 
-        // ============== Tune times ============== //
+        // ================= Tune times ================= //
         times[0] += config.offsets.fajr / 60.0 // Fajr.
         times[1] += config.offsets.sunrise / 60.0 // Sunrise.
         times[2] += config.offsets.dhuhr / 60.0 // Dhuhr.
         times[3] += config.offsets.asr / 60.0 // Asr.
         times[5] += config.offsets.maghrib / 60.0 // Maghrib.
         times[6] += config.offsets.isha / 60.0 // Isha.
+
+        println("Sunset time in timestamp is: ${Timestamp.now().byHMS(rawToTime(times[4])).getFormatted(PatternFormatter.Time12SX())}")
 
         // Convert raw time to HMS components
         return arrayOf(
@@ -261,17 +204,26 @@ class PrayerTimesCalculator private constructor(
         var calcMethod: CalculationMethod = CalculationMethod.CUSTOM,
         var asrMethod: AsrMethod = AsrMethod.SHAFII,
         var higherLatMethod: HigherLatitudeMethod = HigherLatitudeMethod.NONE,
-        var dhuhrMinutes: Int = 0,
+        var useDefaultTimezone: Boolean = true,
         var offsets: PrayerTimesOffsets = PrayerTimesOffsets(),
-        var useDefaultTimezone: Boolean = true
+        var dhuhrMinutes: Int = 0
     ) {
 
-        val params: CalculationMethodParameters = calcMethod.parameters
+        var params: CalculationMethodParameters = CalculationMethod.CUSTOM.parameters
+            get() {
+                return if (calcMethod == CalculationMethod.CUSTOM) field
+                else calcMethod.parameters
+            }
+            set(value) {
+                field = value
+                calcMethod = CalculationMethod.CUSTOM
+            }
 
         val defaultTimezone: Double
             get() = TimeZone.getDefault().rawOffset / 3600.0 / 1000
 
         val daylightSaving: Double = TimeZone.getDefault().dstSavings.toDouble()
+
         override fun toString(): String {
             return buildString {
                 append("Config(calcMethod=")
@@ -298,35 +250,4 @@ class PrayerTimesCalculator private constructor(
 
     }
 
-    companion object {
-
-        @Volatile
-        private var singletonInstance: PrayerTimesCalculator? = null
-
-        private const val TAG = "PrayerTimesCalculator"
-
-        /**
-         * Create a singleton instance of PrayerTimesLib with given parameters if current instance wasn't found
-         *
-         * @return Initialized Singleton Instance of [PrayerTimesCalculator].
-         */
-        fun singletonInstance(location: Location, config: Config): PrayerTimesCalculator {
-            if (singletonInstance == null) {
-                synchronized(PrayerTimesCalculator::class.java) {
-                    if (singletonInstance == null) singletonInstance = PrayerTimesCalculator(location, config)
-                }
-            }
-            return singletonInstance!!
-        }
-
-        /**
-         * Create a new instance of PrayerTimesLib class with given parameters
-         *
-         * @param location Location holds data used in calculation.
-         * @return New Initialized Instance of PrayerTimesLib.
-         */
-        @JvmStatic
-        fun newInstance(location: Location, config: Config) = PrayerTimesCalculator(location, config)
-
-    }
 }

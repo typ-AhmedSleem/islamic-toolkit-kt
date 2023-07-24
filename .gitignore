@@ -65,3 +65,6 @@ cmake-build-*/
 *.mdb
 Thumbs.db
 ._*
+
+# Test-related files (for now)
+test

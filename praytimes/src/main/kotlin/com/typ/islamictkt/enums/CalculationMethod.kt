@@ -3,7 +3,21 @@ package com.typ.islamictkt.enums
 import com.typ.islamictkt.lib.CalculationMethodParameters
 
 /**
- * Calculation Method used during calculating PrayTimes
+ * Calculation Method used during calculating PrayTimes.
+ *
+ * NOTE: This enum class and its parameters shouldn't be touched
+ * or modified because that will cause in wrong calculations.
+ *
+ * Also in future development, this enum class is intended to be
+ * converted to a sealed class to be extended to other types for
+ * other developers to add with its own custom parameters so, if
+ * you want to use custom method, assign the method in your
+ * PrayerTimesCalculator instance to CUSTOM then assign
+ * your custom parameters by calling inline fun '`calcMethodParameters {}`'
+ * or by creating a new instance of '`CalculationMethodParameters`'
+ *
+ * @see CalculationMethodParameters
+ *
  */
 enum class CalculationMethod {
     /**
@@ -58,66 +72,86 @@ enum class CalculationMethod {
             JAFARI -> CalculationMethodParameters(
                 fajrAngle = 16.0,
                 maghribAngle = 4.0,
-                maghribMinutes = Int.MIN_VALUE,
+                maghribMinutes = 0.0,
                 ishaAngle = 14.0,
-                ishaMinutes = Int.MIN_VALUE
+                ishaMinutes = 0.0,
+                shouldApplyMaghribMinutes = false,
+                shouldApplyIshaMinutes = false
             )
 
             KARACHI -> CalculationMethodParameters(
                 fajrAngle = 18.0,
-                maghribAngle = Double.NaN,
-                maghribMinutes = 0,
+                maghribAngle = 0.0,
+                maghribMinutes = 0.0,
                 ishaAngle = 18.0,
-                ishaMinutes = Int.MIN_VALUE
+                ishaMinutes = 0.0,
+                shouldApplyMaghribMinutes = true,
+                shouldApplyIshaMinutes = false
             )
 
             ISNA -> CalculationMethodParameters(
                 fajrAngle = 15.0,
-                maghribAngle = Double.NaN,
-                maghribMinutes = 0,
+                maghribAngle = 0.0,
+                maghribMinutes = 0.0,
                 ishaAngle = 15.0,
-                ishaMinutes = Int.MIN_VALUE
+                ishaMinutes = 0.0,
+                shouldApplyMaghribMinutes = true,
+                shouldApplyIshaMinutes = false
             )
 
             MWL -> CalculationMethodParameters(
                 fajrAngle = 18.0,
-                maghribAngle = Double.NaN,
-                maghribMinutes = 0,
+                maghribAngle = 0.0,
+                maghribMinutes = 0.0,
                 ishaAngle = 17.0,
-                ishaMinutes = Int.MIN_VALUE
+                ishaMinutes = 0.0,
+                shouldApplyMaghribMinutes = true,
+                shouldApplyIshaMinutes = false
             )
 
             MAKKAH -> CalculationMethodParameters(
                 fajrAngle = 18.5,
-                maghribAngle = Double.NaN,
-                maghribMinutes = 0,
+                maghribAngle = 0.0,
+                maghribMinutes = 0.0,
                 ishaAngle = 0.0,
-                ishaMinutes = 90
+                ishaMinutes = 90.0,
+                shouldApplyMaghribMinutes = true,
+                shouldApplyIshaMinutes = true
             )
 
             EGYPT -> CalculationMethodParameters(
                 fajrAngle = 19.5,
-                maghribAngle = Double.NaN,
-                maghribMinutes = 0,
+                maghribAngle = 0.0,
+                maghribMinutes = 0.0,
                 ishaAngle = 17.5,
-                ishaMinutes = Int.MIN_VALUE
+                ishaMinutes = 0.0,
+                shouldApplyMaghribMinutes = true,
+                shouldApplyIshaMinutes = false
             )
 
             TEHRAN -> CalculationMethodParameters(
                 fajrAngle = 17.7,
                 maghribAngle = 4.5,
-                maghribMinutes = Int.MIN_VALUE,
+                maghribMinutes = 0.0,
                 ishaAngle = 14.0,
-                ishaMinutes = Int.MIN_VALUE
+                ishaMinutes = 0.0,
+                shouldApplyMaghribMinutes = false,
+                shouldApplyIshaMinutes = false
             )
 
             else -> CalculationMethodParameters(
                 fajrAngle = 18.0,
-                maghribAngle = Double.NaN,
-                maghribMinutes = 0,
+                maghribAngle = 0.0,
+                maghribMinutes = 0.0,
                 ishaAngle = 17.0,
-                ishaMinutes = Int.MIN_VALUE
+                ishaMinutes = 0.0,
+                shouldApplyMaghribMinutes = true,
+                shouldApplyIshaMinutes = false
             )
         }
+
+    override fun toString(): String {
+        return "CalculationMethod(name= ${this.name})"
+    }
 
 }

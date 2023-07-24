@@ -5,14 +5,10 @@ import com.typ.islamictkt.enums.PrayType
 import com.typ.islamictkt.lib.PrayerTimesCalculator
 import com.typ.islamictkt.location.Location
 import com.typ.islamictkt.utils.byHMS
+import java.util.*
 
-open class PrayerTimes constructor(
-    val fajr: Pray,
-    val sunrise: Pray,
-    val dhuhr: Pray,
-    val asr: Pray,
-    val maghrib: Pray,
-    val isha: Pray
+open class PrayerTimes(
+    val fajr: Pray, val sunrise: Pray, val dhuhr: Pray, val asr: Pray, val maghrib: Pray, val isha: Pray
 ) {
 
     operator fun get(index: Int) = toArray()[index]
@@ -24,6 +20,15 @@ open class PrayerTimes constructor(
     fun toArray() = arrayOf(fajr, sunrise, dhuhr, asr, maghrib, isha)
 
     fun toArrayNoSunrise() = arrayOf(fajr, dhuhr, asr, maghrib, isha)
+
+    val currentPray: Pray
+        get() = getCurrentPray(this)
+
+    val nextPray: Pray?
+        get() = getNextPray(this)
+
+    val upcomingPrays: Array<Pray>
+        get() = getUpcomingPrays(this)
 
     override fun toString(): String {
         return """
@@ -61,10 +66,11 @@ open class PrayerTimes constructor(
     }
 
     companion object {
+
         @JvmStatic
         fun getTodayPrays(location: Location, config: PrayerTimesCalculator.Config): PrayerTimes {
             val today = Timestamp.now()
-            val rawPrays = PrayerTimesCalculator.newInstance(location, config).getPrayTimes(0)
+            val rawPrays = PrayerTimesCalculator(location, config).getPrayTimes(0)
 
             return PrayerTimes(
                 fajr = Pray(PrayType.FAJR, today.byHMS(rawPrays[0])),
@@ -75,6 +81,60 @@ open class PrayerTimes constructor(
                 isha = Pray(PrayType.ISHA, today.byHMS(rawPrays[5]))
             )
         }
+
+        @JvmStatic
+        fun getPrays(location: Location, config: PrayerTimesCalculator.Config, daysToRoll: Int): PrayerTimes {
+            val timestamp: Timestamp = Timestamp.now().apply { roll(Calendar.DATE, daysToRoll) }
+            return getPrays(location, config, timestamp)
+        }
+
+        @JvmStatic
+        fun getPrays(location: Location, config: PrayerTimesCalculator.Config, timestamp: Timestamp): PrayerTimes {
+            return PrayerTimesCalculator(location, config).getPrayTimes(timestamp).run {
+                PrayerTimes(
+                    fajr = Pray(PrayType.FAJR, timestamp.clone().byHMS(this[0])),
+                    sunrise = Pray(PrayType.SUNRISE, timestamp.clone().byHMS(this[1])),
+                    dhuhr = Pray(PrayType.DHUHR, timestamp.clone().byHMS(this[2])),
+                    asr = Pray(PrayType.ASR, timestamp.clone().byHMS(this[3])),
+                    maghrib = Pray(PrayType.MAGHRIB, timestamp.clone().byHMS(this[4])),
+                    isha = Pray(PrayType.ISHA, timestamp.clone().byHMS(this[5]))
+                )
+            }
+        }
+
+        @JvmStatic
+        fun getCurrentPray(prays: PrayerTimes): Pray {
+            var currentPray: Pray = prays.fajr
+            for (pray in prays.toArrayNoSunrise()) {
+                if (pray.passed) currentPray = pray
+                else break
+            }
+            return currentPray
+        }
+
+        @JvmStatic
+        fun getNextPray(prays: PrayerTimes): Pray? {
+            // Get the next pray in given prays
+            if (prays.isha.passed) return null
+            var nextPray = prays.fajr
+            for (pray in prays) {
+                if (pray.passed) continue
+                nextPray = pray
+                break
+            }
+            return nextPray
+        }
+
+        @JvmStatic
+        fun getUpcomingPrays(prays: PrayerTimes): Array<Pray> {
+            val upPrays = mutableListOf<Pray>()
+            for (pray in prays) {
+                if (pray.passed) continue
+                upPrays.add(pray)
+            }
+            return upPrays.toTypedArray()
+        }
+
 
     }
 }
