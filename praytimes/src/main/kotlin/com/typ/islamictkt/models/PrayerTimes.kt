@@ -7,8 +7,13 @@ import com.typ.islamictkt.location.Location
 import com.typ.islamictkt.utils.byHMS
 import java.util.*
 
-open class PrayerTimes(
-    val fajr: Pray, val sunrise: Pray, val dhuhr: Pray, val asr: Pray, val maghrib: Pray, val isha: Pray
+open class PrayerTimes private constructor(
+    val fajr: Pray,
+    val sunrise: Pray,
+    val dhuhr: Pray,
+    val asr: Pray,
+    val maghrib: Pray,
+    val isha: Pray
 ) {
 
     operator fun get(index: Int) = toArray()[index]
@@ -69,17 +74,7 @@ open class PrayerTimes(
 
         @JvmStatic
         fun getTodayPrays(location: Location, config: PrayerTimesCalculator.Config): PrayerTimes {
-            val today = Timestamp.now()
-            val rawPrays = PrayerTimesCalculator(location, config).getPrayTimes(0)
-
-            return PrayerTimes(
-                fajr = Pray(PrayType.FAJR, today.byHMS(rawPrays[0])),
-                sunrise = Pray(PrayType.SUNRISE, today.byHMS(rawPrays[1])),
-                dhuhr = Pray(PrayType.DHUHR, today.byHMS(rawPrays[2])),
-                asr = Pray(PrayType.ASR, today.byHMS(rawPrays[3])),
-                maghrib = Pray(PrayType.MAGHRIB, today.byHMS(rawPrays[4])),
-                isha = Pray(PrayType.ISHA, today.byHMS(rawPrays[5]))
-            )
+            return getPrays(location, config, Timestamp.now())
         }
 
         @JvmStatic
@@ -134,7 +129,6 @@ open class PrayerTimes(
             }
             return upPrays.toTypedArray()
         }
-
 
     }
 }

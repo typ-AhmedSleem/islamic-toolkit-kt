@@ -1,7 +1,6 @@
 package com.typ.islamictkt.lib
 
 import com.typ.islamictkt.datetime.HMS
-import com.typ.islamictkt.datetime.PatternFormatter
 import com.typ.islamictkt.datetime.Timestamp
 import com.typ.islamictkt.datetime.YMD
 import com.typ.islamictkt.enums.AsrMethod
@@ -20,7 +19,6 @@ import com.typ.islamictkt.utils.MathUtils.dArcCot
 import com.typ.islamictkt.utils.MathUtils.dCos
 import com.typ.islamictkt.utils.MathUtils.dSin
 import com.typ.islamictkt.utils.MathUtils.dTan
-import com.typ.islamictkt.utils.byHMS
 import java.util.*
 import kotlin.math.abs
 import kotlin.math.floor
@@ -174,8 +172,6 @@ class PrayerTimesCalculator(
         times[5] += config.offsets.maghrib / 60.0 // Maghrib.
         times[6] += config.offsets.isha / 60.0 // Isha.
 
-        println("Sunset time in timestamp is: ${Timestamp.now().byHMS(rawToTime(times[4])).getFormatted(PatternFormatter.Time12SX())}")
-
         // Convert raw time to HMS components
         return arrayOf(
             rawToTime(times[0]), // Fajr
@@ -185,10 +181,6 @@ class PrayerTimesCalculator(
             rawToTime(times[5]), // Maghrib
             rawToTime(times[6]) // Isha
         )
-    }
-
-    fun getPrayTimes(daysToRoll: Int): Array<HMS> {
-        return getPrayTimes(Timestamp.now().apply { roll(Calendar.DATE, daysToRoll) })
     }
 
     fun getPrayTimes(date: Timestamp): Array<HMS> {
