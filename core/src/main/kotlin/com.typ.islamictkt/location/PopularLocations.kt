@@ -39,5 +39,151 @@ object PopularLocations {
         )
 
     }
+    
+    object SaudiArabia {
+        val MAKKAH = Location(
+            code = "SA",
+            latitude = 21.422487,
+            longitude = 39.826206,
+            timezone = 3.0
+        )
+        
+        val MEDINA = Location(
+            code = "SA",
+            latitude = 24.524654,
+            longitude = 39.569118,
+            timezone = 3.0
+        )
+    }
+
+    // United Arab Emirates
+    object UnitedArabEmirates {
+        val DUBAI = Location(
+            code = "AE",
+            latitude = 25.276987,
+            longitude = 55.296249,
+            timezone = 4.0
+        )
+    }
+
+    // Syria
+    object Syria {
+        val DAMASCUS = Location(
+            code = "SY",
+            latitude = 33.5138,
+            longitude = 36.2765,
+            timezone = 3.0
+        )
+    }
+
+    // Palestine
+    object Palestine {
+        val JERUSALEM = Location(
+            code = "PS",
+            latitude = 31.7683,
+            longitude = 35.2137,
+            timezone = 3.0
+        )
+    }
+
+    // Iraq
+    object Iraq {
+        val BAGHDAD = Location(
+            code = "IQ",
+            latitude = 33.3152,
+            longitude = 44.3661,
+            timezone = 3.0
+        )
+    }
+
+    // Morocco
+    object Morocco {
+        val CASABLANCA = Location(
+            code = "MA",
+            latitude = 33.5731,
+            longitude = -7.5898,
+            timezone = 1.0
+        )
+    }
+
+    // Algeria
+    object Algeria {
+        val ALGIERS = Location(
+            code = "DZ",
+            latitude = 36.7538,
+            longitude = 3.0588,
+            timezone = 1.0
+        )
+    }
+
+    // Kuwait
+    object Kuwait {
+        val KUWAIT_CITY = Location(
+            code = "KW",
+            latitude = 29.3759,
+            longitude = 47.9774,
+            timezone = 3.0
+        )
+    }
+
+    // Jordan
+    object Jordan {
+        val AMMAN = Location(
+            code = "JO",
+            latitude = 31.9454,
+            longitude = 35.9284,
+            timezone = 3.0
+        )
+    }
+
+    // Libya
+    object Libya {
+        val TRIPOLI = Location(
+            code = "LY",
+            latitude = 32.8872,
+            longitude = 13.1913,
+            timezone = 2.0
+        )
+    }
+
+    // Lebanon
+    object Lebanon {
+        val BEIRUT = Location(
+            code = "LB",
+            latitude = 33.8889,
+            longitude = 35.4944,
+            timezone = 3.0
+        )
+    }
+
+    // Yemen
+    object Yemen {
+        val SANA_A = Location(
+            code = "YE",
+            latitude = 15.3694,
+            longitude = 44.1910,
+            timezone = 3.0
+        )
+    }
+
+    // Qatar
+    object Qatar {
+        val DOHA = Location(
+            code = "QA",
+            latitude = 25.276987,
+            longitude = 51.5183,
+            timezone = 3.0
+        )
+    }
+
+    // Sudan
+    object Sudan {
+        val KHARTOUM = Location(
+            code = "SD",
+            latitude = 15.5007,
+            longitude = 32.5599,
+            timezone = 2.0
+        )
+    }
 
 }
