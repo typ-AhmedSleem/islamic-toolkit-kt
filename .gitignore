@@ -5,6 +5,7 @@
 out/
 gen/
 /captures/
+.run
 
 # User-specific files
 *.iws
