@@ -1,9 +1,9 @@
-package com.typ.islamictkt.models
+package com.typ.islamictkt.prays.models
 
 import com.typ.islamictkt.datetime.PatternFormatter
 import com.typ.islamictkt.datetime.Timestamp
-import com.typ.islamictkt.enums.PrayStatus
-import com.typ.islamictkt.enums.PrayType
+import com.typ.islamictkt.prays.enums.PrayStatus
+import com.typ.islamictkt.prays.enums.PrayType
 import com.typ.islamictkt.locale.LocaleManager
 import java.util.*
 

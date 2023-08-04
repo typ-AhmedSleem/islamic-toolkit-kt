@@ -1,4 +1,4 @@
-package com.typ.islamictkt.enums
+package com.typ.islamictkt.prays.enums
 
 enum class PrayStatus {
     PASSED,

@@ -1,4 +1,4 @@
-package com.typ.islamictkt.enums
+package com.typ.islamictkt.prays.enums
 
 /**
  * HigherLatitude used during calculating PrayTimes in high-latitude locations

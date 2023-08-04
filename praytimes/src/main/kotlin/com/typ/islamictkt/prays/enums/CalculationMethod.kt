@@ -1,6 +1,6 @@
-package com.typ.islamictkt.enums
+package com.typ.islamictkt.prays.enums
 
-import com.typ.islamictkt.lib.CalculationMethodParameters
+import com.typ.islamictkt.prays.lib.CalculationMethodParameters
 
 /**
  * Calculation Method used during calculating PrayTimes.
@@ -38,7 +38,7 @@ enum class CalculationMethod {
     /**
      * Muslim World League (MWL)
      */
-    MWL,
+    MUSWL,
 
     /**
      * Umm al-Qura, Makkah
@@ -99,7 +99,7 @@ enum class CalculationMethod {
                 shouldApplyIshaMinutes = false
             )
 
-            MWL -> CalculationMethodParameters(
+            MUSWL -> CalculationMethodParameters(
                 fajrAngle = 18.0,
                 maghribAngle = 0.0,
                 maghribMinutes = 0.0,
@@ -140,12 +140,12 @@ enum class CalculationMethod {
             )
 
             else -> CalculationMethodParameters(
-                fajrAngle = 18.0,
+                fajrAngle = 0.0,
                 maghribAngle = 0.0,
                 maghribMinutes = 0.0,
-                ishaAngle = 17.0,
+                ishaAngle = 0.0,
                 ishaMinutes = 0.0,
-                shouldApplyMaghribMinutes = true,
+                shouldApplyMaghribMinutes = false,
                 shouldApplyIshaMinutes = false
             )
         }
