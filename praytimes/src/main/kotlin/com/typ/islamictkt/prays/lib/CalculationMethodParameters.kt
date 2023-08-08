@@ -1,4 +1,4 @@
-package com.typ.islamictkt.lib
+package com.typ.islamictkt.prays.lib
 
 class CalculationMethodParameters(
     var fajrAngle: Double,

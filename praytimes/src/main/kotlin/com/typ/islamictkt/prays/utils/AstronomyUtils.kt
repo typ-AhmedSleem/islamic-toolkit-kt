@@ -1,8 +1,8 @@
-package com.typ.islamictkt.utils
+package com.typ.islamictkt.prays.utils
 
 import com.typ.islamictkt.datetime.Timestamp
 import com.typ.islamictkt.datetime.YMD
-import com.typ.islamictkt.enums.HigherLatitudeMethod
+import com.typ.islamictkt.prays.enums.HigherLatitudeMethod
 import kotlin.math.floor
 
 object AstronomyUtils {
@@ -47,14 +47,14 @@ object AstronomyUtils {
      * Compute declination angle of sun and equation of time */
     private fun calculateSunPosition(jd: Double): DoubleArray {
         val D = jd - 2451545
-        val g = MathUtils.finAngle(357.529 + 0.98560028 * D)
-        val q = MathUtils.finAngle(280.459 + 0.98564736 * D)
-        val L = MathUtils.finAngle(q + 1.915 * MathUtils.dSin(g) + 0.020 * MathUtils.dSin(2 * g))
+        val g = PrayerTimesMath.finAngle(357.529 + 0.98560028 * D)
+        val q = PrayerTimesMath.finAngle(280.459 + 0.98564736 * D)
+        val L = PrayerTimesMath.finAngle(q + 1.915 * PrayerTimesMath.dSin(g) + 0.020 * PrayerTimesMath.dSin(2 * g))
 
         // double R = 1.00014 - 0.01671 * [self dcos:g] - 0.00014 * [self dcos:(2*g)];
         val e = 23.439 - 0.00000036 * D
-        val d = MathUtils.dArcSin(MathUtils.dSin(e) * MathUtils.dSin(L))
-        var RA = MathUtils.dArcTan2(MathUtils.dCos(e) * MathUtils.dSin(L), MathUtils.dCos(L)) / 15.0
+        val d = PrayerTimesMath.dArcSin(PrayerTimesMath.dSin(e) * PrayerTimesMath.dSin(L))
+        var RA = PrayerTimesMath.dArcTan2(PrayerTimesMath.dCos(e) * PrayerTimesMath.dSin(L), PrayerTimesMath.dCos(L)) / 15.0
         RA = fixHour(RA)
 
         val equOfTime = q / 15.0 - RA

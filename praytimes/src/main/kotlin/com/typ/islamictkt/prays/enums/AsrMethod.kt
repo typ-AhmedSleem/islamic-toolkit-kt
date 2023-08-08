@@ -1,4 +1,4 @@
-package com.typ.islamictkt.enums
+package com.typ.islamictkt.prays.enums
 
 // todo: Must be documented
 enum class AsrMethod {

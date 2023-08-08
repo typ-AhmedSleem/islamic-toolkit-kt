@@ -1,19 +1,19 @@
-package com.typ.islamictkt.models
+package com.typ.islamictkt.prays.models
 
+import com.typ.islamictkt.datetime.HMS
 import com.typ.islamictkt.datetime.Timestamp
-import com.typ.islamictkt.enums.PrayType
-import com.typ.islamictkt.lib.PrayerTimesCalculator
 import com.typ.islamictkt.location.Location
-import com.typ.islamictkt.utils.byHMS
+import com.typ.islamictkt.prays.enums.PrayType
+import com.typ.islamictkt.prays.lib.PrayerTimesCalculator
 import java.util.*
 
-open class PrayerTimes private constructor(
-    val fajr: Pray,
-    val sunrise: Pray,
-    val dhuhr: Pray,
-    val asr: Pray,
-    val maghrib: Pray,
-    val isha: Pray
+open class PrayerTimes(
+    open val fajr: Pray,
+    open val sunrise: Pray,
+    open val dhuhr: Pray,
+    open val asr: Pray,
+    open val maghrib: Pray,
+    open val isha: Pray
 ) {
 
     operator fun get(index: Int) = toArray()[index]
@@ -72,29 +72,62 @@ open class PrayerTimes private constructor(
 
     companion object {
 
-        @JvmStatic
-        fun getTodayPrays(location: Location, config: PrayerTimesCalculator.Config): PrayerTimes {
-            return getPrays(location, config, Timestamp.now())
+        /** Helper method that clones given timestamp then applies
+         * given HMS to it.
+         *
+         * NOTE: A KTX version of this method will be included in the next
+         * update of this library in file: CoreKTX and known as: `Timestamp.byHMS(...)`
+         *
+         * @param timestamp Timestamp to be cloned.
+         * @param hms Time components to be applied.
+         *
+         * @return New instance of [Timestamp] with time components applied.
+         *
+         */
+        private fun timestampFromHMS(timestamp: Timestamp, hms: HMS): Timestamp {
+            return timestamp.clone().apply {
+                this[Calendar.HOUR_OF_DAY] = hms.hours
+                this[Calendar.MINUTE] = hms.minutes
+                this[Calendar.SECOND] = hms.seconds
+            }
         }
 
         @JvmStatic
-        fun getPrays(location: Location, config: PrayerTimesCalculator.Config, daysToRoll: Int): PrayerTimes {
-            val timestamp: Timestamp = Timestamp.now().apply { roll(Calendar.DATE, daysToRoll) }
-            return getPrays(location, config, timestamp)
+        fun getPrays(calculator: PrayerTimesCalculator, timestamp: Timestamp): PrayerTimes {
+            return calculator.getPrayTimes(timestamp).run {
+                PrayerTimes(
+                    fajr = Pray(PrayType.FAJR, timestampFromHMS(timestamp.clone(), this[0])),
+                    sunrise = Pray(PrayType.SUNRISE, timestampFromHMS(timestamp.clone(), this[1])),
+                    dhuhr = Pray(PrayType.DHUHR, timestampFromHMS(timestamp.clone(), this[2])),
+                    asr = Pray(PrayType.ASR, timestampFromHMS(timestamp.clone(), this[3])),
+                    maghrib = Pray(PrayType.MAGHRIB, timestampFromHMS(timestamp.clone(), this[4])),
+                    isha = Pray(PrayType.ISHA, timestampFromHMS(timestamp.clone(), this[5]))
+                )
+            }
         }
 
         @JvmStatic
         fun getPrays(location: Location, config: PrayerTimesCalculator.Config, timestamp: Timestamp): PrayerTimes {
-            return PrayerTimesCalculator(location, config).getPrayTimes(timestamp).run {
-                PrayerTimes(
-                    fajr = Pray(PrayType.FAJR, timestamp.clone().byHMS(this[0])),
-                    sunrise = Pray(PrayType.SUNRISE, timestamp.clone().byHMS(this[1])),
-                    dhuhr = Pray(PrayType.DHUHR, timestamp.clone().byHMS(this[2])),
-                    asr = Pray(PrayType.ASR, timestamp.clone().byHMS(this[3])),
-                    maghrib = Pray(PrayType.MAGHRIB, timestamp.clone().byHMS(this[4])),
-                    isha = Pray(PrayType.ISHA, timestamp.clone().byHMS(this[5]))
-                )
-            }
+            return getPrays(PrayerTimesCalculator(location, config), timestamp)
+        }
+
+        @JvmStatic
+        fun getPrays(location: Location, config: PrayerTimesCalculator.Config, daysToRoll: Int): PrayerTimes {
+            return getPrays(
+                location,
+                config,
+                Timestamp.now().apply { roll(Calendar.DATE, daysToRoll) }
+            )
+        }
+
+        @JvmStatic
+        fun getTodayPrays(calculator: PrayerTimesCalculator): PrayerTimes {
+            return getPrays(calculator, Timestamp.now())
+        }
+
+        @JvmStatic
+        fun getTodayPrays(location: Location, config: PrayerTimesCalculator.Config): PrayerTimes {
+            return getPrays(location, config, Timestamp.now())
         }
 
         @JvmStatic

@@ -1,24 +1,24 @@
-package com.typ.islamictkt.lib
+package com.typ.islamictkt.prays.lib
 
 import com.typ.islamictkt.datetime.HMS
 import com.typ.islamictkt.datetime.Timestamp
 import com.typ.islamictkt.datetime.YMD
-import com.typ.islamictkt.enums.AsrMethod
-import com.typ.islamictkt.enums.CalculationMethod
-import com.typ.islamictkt.enums.HigherLatitudeMethod
 import com.typ.islamictkt.location.Location
-import com.typ.islamictkt.models.PrayerTimes
-import com.typ.islamictkt.utils.AstronomyUtils
-import com.typ.islamictkt.utils.AstronomyUtils.calculateDayPortion
-import com.typ.islamictkt.utils.AstronomyUtils.calculateMidDay
-import com.typ.islamictkt.utils.AstronomyUtils.calculateNightPortion
-import com.typ.islamictkt.utils.AstronomyUtils.calculateSunDeclination
-import com.typ.islamictkt.utils.AstronomyUtils.fixHour
-import com.typ.islamictkt.utils.MathUtils.dArcCos
-import com.typ.islamictkt.utils.MathUtils.dArcCot
-import com.typ.islamictkt.utils.MathUtils.dCos
-import com.typ.islamictkt.utils.MathUtils.dSin
-import com.typ.islamictkt.utils.MathUtils.dTan
+import com.typ.islamictkt.prays.enums.AsrMethod
+import com.typ.islamictkt.prays.enums.CalculationMethod
+import com.typ.islamictkt.prays.enums.HigherLatitudeMethod
+import com.typ.islamictkt.prays.models.PrayerTimes
+import com.typ.islamictkt.prays.utils.AstronomyUtils
+import com.typ.islamictkt.prays.utils.AstronomyUtils.calculateDayPortion
+import com.typ.islamictkt.prays.utils.AstronomyUtils.calculateMidDay
+import com.typ.islamictkt.prays.utils.AstronomyUtils.calculateNightPortion
+import com.typ.islamictkt.prays.utils.AstronomyUtils.calculateSunDeclination
+import com.typ.islamictkt.prays.utils.AstronomyUtils.fixHour
+import com.typ.islamictkt.prays.utils.PrayerTimesMath.dArcCos
+import com.typ.islamictkt.prays.utils.PrayerTimesMath.dArcCot
+import com.typ.islamictkt.prays.utils.PrayerTimesMath.dCos
+import com.typ.islamictkt.prays.utils.PrayerTimesMath.dSin
+import com.typ.islamictkt.prays.utils.PrayerTimesMath.dTan
 import java.util.*
 import kotlin.math.abs
 import kotlin.math.floor
@@ -206,7 +206,7 @@ class PrayerTimesCalculator(
                 return if (calcMethod == CalculationMethod.CUSTOM) field
                 else calcMethod.parameters
             }
-            set(value) {
+            internal set(value) {
                 field = value
                 calcMethod = CalculationMethod.CUSTOM
             }
@@ -215,6 +215,54 @@ class PrayerTimesCalculator(
             get() = TimeZone.getDefault().rawOffset / 3600.0 / 1000
 
         val daylightSaving: Double = TimeZone.getDefault().dstSavings.toDouble()
+
+        /** Updates parameters of current config of custom calculation method.
+         *
+         * NOTE: if changes happened and calculation method isn't [CalculationMethod.CUSTOM],
+         * then `config.calcMethod` will be set automatically to [CalculationMethod.CUSTOM]
+         */
+        fun updateParameters(
+            fajrAngle: Double = this.params.fajrAngle,
+            shouldApplyMaghribMinutes: Boolean = this.params.shouldApplyMaghribMinutes,
+            maghribAngle: Double = this.params.maghribAngle,
+            maghribMinutes: Double = this.params.maghribMinutes,
+            shouldApplyIshaMinutes: Boolean = this.params.shouldApplyIshaMinutes,
+            ishaAngle: Double = this.params.ishaAngle,
+            ishaMinutes: Double = this.params.ishaMinutes
+        ) {
+            var anythingChanged = false
+            this.params.apply {
+                if (this.fajrAngle != fajrAngle) {
+                    this.fajrAngle = fajrAngle
+                    anythingChanged = true
+                }
+                if (this.fajrAngle != fajrAngle) {
+                    this.shouldApplyMaghribMinutes = shouldApplyMaghribMinutes
+                    anythingChanged = true
+                }
+                if (this.fajrAngle != fajrAngle) {
+                    this.shouldApplyIshaMinutes = shouldApplyIshaMinutes
+                    anythingChanged = true
+                }
+                if (this.fajrAngle != fajrAngle) {
+                    this.maghribAngle = maghribAngle
+                    anythingChanged = true
+                }
+                if (this.fajrAngle != fajrAngle) {
+                    this.maghribMinutes = maghribMinutes
+                    anythingChanged = true
+                }
+                if (this.fajrAngle != fajrAngle) {
+                    this.ishaAngle = ishaAngle
+                    anythingChanged = true
+                }
+                if (this.fajrAngle != fajrAngle) {
+                    this.ishaMinutes = ishaMinutes
+                    anythingChanged = true
+                }
+            }
+            if (anythingChanged) this.calcMethod = CalculationMethod.CUSTOM
+        }
 
         override fun toString(): String {
             return buildString {

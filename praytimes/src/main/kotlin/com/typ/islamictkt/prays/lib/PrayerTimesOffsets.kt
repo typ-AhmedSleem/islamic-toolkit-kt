@@ -1,4 +1,4 @@
-package com.typ.islamictkt.lib
+package com.typ.islamictkt.prays.lib
 
 class PrayerTimesOffsets(
     var fajr: Int = 0,
@@ -11,4 +11,10 @@ class PrayerTimesOffsets(
     fun toArray() = arrayOf(fajr, sunrise, dhuhr, asr, maghrib, isha)
 
     operator fun iterator() = toArray().iterator()
+
+    override fun toString(): String {
+        return "PrayerTimesOffsets(fajr=$fajr, sunrise=$sunrise, dhuhr=$dhuhr, asr=$asr, maghrib=$maghrib, isha=$isha)"
+    }
+
+
 }

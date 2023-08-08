@@ -1,8 +1,8 @@
-package com.typ.islamictkt.utils
+package com.typ.islamictkt.prays.utils
 
 import kotlin.math.*
 
-object MathUtils {
+object PrayerTimesMath {
 
     /**
      * Range reduce angle in degrees.
