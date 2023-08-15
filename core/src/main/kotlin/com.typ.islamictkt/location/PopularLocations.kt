@@ -38,8 +38,42 @@ object PopularLocations {
             timezone = 2.0
         )
 
+        val SOHAG = Location(
+            code = "EG",
+            latitude = 26.549999,
+            longitude = 31.700001,
+            timezone = 2.0
+        )
+
+        val MERSA_MATRUH = Location(
+            code = "EG",
+            latitude = 31.354343,
+            longitude = 27.2373161,
+            timezone = 2.0
+        )
+
+        val GIZA = Location(
+            code = "EG",
+            latitude = 30.013056,
+            longitude = 31.208853,
+            timezone = 2.0
+        )
+
+        val ALEXANDRIA = Location(
+            code = "EG",
+            latitude = 31.205753,
+            longitude = 29.924526,
+            timezone = 2.0
+        )
+
+        val LUXOR = Location(
+            code = "EG",
+            latitude = 25.687243,
+            longitude = 32.639637,
+            timezone = 2.0
+        )
     }
-    
+
     object SaudiArabia {
         val MAKKAH = Location(
             code = "SA",
@@ -47,7 +81,7 @@ object PopularLocations {
             longitude = 39.826206,
             timezone = 3.0
         )
-        
+
         val MEDINA = Location(
             code = "SA",
             latitude = 24.524654,
