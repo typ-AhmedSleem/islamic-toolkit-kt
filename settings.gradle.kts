@@ -4,3 +4,4 @@ rootProject.name = "islamic-toolkit-kt"
 include(":core")
 include(":praytimes")
 include(":hijri")
+include(":qibla")
